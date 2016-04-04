@@ -13,6 +13,7 @@ __copyright__ = "Copyright (c) 2009 Sunlight Labs"
 __license__ = "BSD"
 
 import urllib, urllib2
+import requests
 try:
     import json
 except ImportError:
@@ -37,13 +38,14 @@ class CRP(object):
         if CRP.apikey is None:
             raise CRPApiError('Missing CRP apikey')
 
-        url = 'http://api.opensecrets.org/?method=%s&output=json&apikey=%s&%s' % \
-              (func, CRP.apikey, urllib.urlencode(params))
-        
+        protocol = 'https'
+        server = 'www.opensecrets.org'
+        url = '%s://%s/api/?method=%s&output=json&apikey=%s&%s' % \
+              (protocol, server, func, CRP.apikey, urllib.urlencode(params))
         try:
-            response = urllib2.urlopen(url).read()
-            return json.loads(response)['response']
-        except urllib2.HTTPError, e:
+            response = requests.get(url)
+            return response.json()
+        except requests.HTTPError, e:
             raise CRPApiError(e.read())
         except (ValueError, KeyError), e:
             raise CRPApiError('Invalid Response')
@@ -51,59 +53,59 @@ class CRP(object):
     class getLegislators(object):
         @staticmethod
         def get(**kwargs):
-            results = CRP._apicall('getLegislators', kwargs)['legislator']
+            results = CRP._apicall('getLegislators', kwargs)
             return results
 
     class memPFDprofile(object):
         @staticmethod
         def get(**kwargs):
-            results = CRP._apicall('memPFDprofile', kwargs)['member_profile']
+            results = CRP._apicall('memPFDprofile', kwargs)['response']['member_profile']
             return results
 
     class candSummary(object):
         @staticmethod
         def get(**kwargs):
-            result = CRP._apicall('candSummary', kwargs)['summary']
+            result = CRP._apicall('candSummary', kwargs)
             return result['@attributes']
 
     class candContrib(object):
         @staticmethod
         def get(**kwargs):
-            results = CRP._apicall('candContrib', kwargs)['contributors']['contributor']
+            results = CRP._apicall('candContrib', kwargs)['response']['contributors']
             return results
 
     class candIndustry(object):
         @staticmethod
         def get(**kwargs):
-            results = CRP._apicall('candIndustry', kwargs)['industries']['industry']
+            results = CRP._apicall('candIndustry', kwargs)
             return results
 
     class candSector(object):
         @staticmethod
         def get(**kwargs):
-            results = CRP._apicall('candSector', kwargs)['sectors']['sector']
+            results = CRP._apicall('candSector', kwargs)
             return results
 
     class candIndByInd(object):
         @staticmethod
         def get(**kwargs):
-            result = CRP._apicall('CandIndByInd', kwargs)['candIndus']
+            result = CRP._apicall('CandIndByInd', kwargs)
             return result['@attributes']
 
     class getOrgs(object):
         @staticmethod
         def get(**kwargs):
-            results = CRP._apicall('getOrgs', kwargs)['organization']
+            results = CRP._apicall('getOrgs', kwargs)
             return results
             
     class orgSummary(object):
         @staticmethod
         def get(**kwargs):
-            results = CRP._apicall('orgSummary', kwargs)['organization']
+            results = CRP._apicall('orgSummary', kwargs)
             return results
             
     class congCmteIndus(object):
         @staticmethod
         def get(**kwargs):
-            results = CRP._apicall('congCmteIndus', kwargs)['committee']['member']
+            results = CRP._apicall('congCmteIndus', kwargs)
             return results
