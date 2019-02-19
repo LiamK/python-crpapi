@@ -66,7 +66,7 @@ class CRP(object):
         @staticmethod
         def get(**kwargs):
             result = CRP._apicall('candSummary', kwargs)
-            return result['@attributes']
+            return result['response']['candSummary']['@attributes']
 
     class candContrib(object):
         @staticmethod
