@@ -12,7 +12,7 @@ __version__ = "0.1.0"
 __copyright__ = "Copyright (c) 2009 Sunlight Labs"
 __license__ = "BSD"
 
-import urllib, urllib2
+import urllib.parse
 import requests
 try:
     import json
@@ -41,13 +41,13 @@ class CRP(object):
         protocol = 'https'
         server = 'www.opensecrets.org'
         url = '%s://%s/api/?method=%s&output=json&apikey=%s&%s' % \
-              (protocol, server, func, CRP.apikey, urllib.urlencode(params))
+              (protocol, server, func, CRP.apikey, urllib.parse.urlencode(params))
         try:
             response = requests.get(url)
             return response.json()
-        except requests.HTTPError, e:
+        except requests.HTTPError as e:
             raise CRPApiError(e.read())
-        except (ValueError, KeyError), e:
+        except (ValueError, KeyError) as e:
             raise CRPApiError('Invalid Response')
 
     class getLegislators(object):
@@ -90,7 +90,7 @@ class CRP(object):
         @staticmethod
         def get(**kwargs):
             result = CRP._apicall('CandIndByInd', kwargs)
-            return result['@attributes']
+            return result['response']['candIndus']['@attributes']
 
     class getOrgs(object):
         @staticmethod
